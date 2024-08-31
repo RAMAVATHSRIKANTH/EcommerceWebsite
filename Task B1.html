@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .product-list {
+            margin: 20px 0;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .product h3 {
+            margin: 0;
+        }
+        .review {
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Product Management</h1>
+        
+        <label for="category">Filter by category:</label>
+        <select id="category">
+            <option value="">All</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Appliances">Appliances</option>
+        </select>
+        
+        <label for="sort">Sort by:</label>
+        <select id="sort">
+            <option value="price">Price</option>
+            <option value="rating">Rating</option>
+        </select>
+        
+        <div class="product-list" id="productList"></div>
+        
+        <div>
+            <h2>Add Review</h2>
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" placeholder="Product Name">
+            <label for="reviewText">Review:</label>
+            <textarea id="reviewText" rows="4" placeholder="Write your review..."></textarea>
+            <button onclick="addReview()">Submit Review</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { name: 'Laptop', category: 'Electronics', price: 999.99, rating: 4.5, reviews: [] },
+            { name: 'Smartphone', category: 'Electronics', price: 499.99, rating: 4.7, reviews: [] },
+            { name: 'Coffee Maker', category: 'Appliances', price: 79.99, rating: 4.2, reviews: [] }
+        ];
+
+        function renderProducts() {
+            const category = document.getElementById('category').value;
+            const sortKey = document.getElementById('sort').value;
+            const filteredProducts = products
+                .filter(p => !category || p.category === category)
+                .sort((a, b) => {
+                    if (sortKey === 'price') {
+                        return a.price - b.price;
+                    } else if (sortKey === 'rating') {
+                        return b.rating - a.rating;
+                    }
+                    return 0;
+                });
+                
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            
+            filteredProducts.forEach(p => {
+                const productElement = document.createElement('div');
+                productElement.className = 'product';
+                productElement.innerHTML = `
+                    <h3>${p.name}</h3>
+                    <p>Category: ${p.category}</p>
+                    <p>Price: $${p.price.toFixed(2)}</p>
+                    <p>Rating: ${p.rating}</p>
+                    <div>
+                        <strong>Reviews:</strong>
+                        ${p.reviews.length ? p.reviews.map(r => `<p class="review">${r}</p>`).join('') : '<p>No reviews yet.</p>'}
+                    </div>
+                `;
+                productList.appendChild(productElement);
+            });
+        }
+
+        function addReview() {
+            const productName = document.getElementById('productName').value;
+            const reviewText = document.getElementById('reviewText').value;
+            
+            const product = products.find(p => p.name === productName);
+            if (product) {
+                product.reviews.push(reviewText);
+                renderProducts();
+                document.getElementById('productName').value = '';
+                document.getElementById('reviewText').value = '';
+            } else {
+                alert('Product not found.');
+            }
+        }
+
+        document.getElementById('category').addEventListener('change', renderProducts);
+        document.getElementById('sort').addEventListener('change', renderProducts);
+
+        // Initial render
+        renderProducts();
+    </script>
+
+</body>
+</html>
